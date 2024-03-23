@@ -1,5 +1,5 @@
 use std::time::Instant;
-use xcap::Window;
+use xcap::{Monitor, Window};
 
 fn normalized(filename: &str) -> String {
     filename
@@ -11,6 +11,14 @@ fn normalized(filename: &str) -> String {
 
 fn main() {
     let start = Instant::now();
+
+    capture_monitors();
+    capture_windows();
+
+    println!("Running time: {:?}", start.elapsed());
+}
+
+fn capture_windows() {
     let windows = Window::all().unwrap();
 
     let mut i = 0;
@@ -39,6 +47,16 @@ fn main() {
 
         i += 1;
     }
+}
 
-    println!("Running time: {:?}", start.elapsed());
+fn capture_monitors() {
+    let monitors = Monitor::all().unwrap();
+
+    for monitor in monitors {
+        let image = monitor.capture_image().unwrap();
+
+        image
+            .save(format!("target/monitor-{}.png", normalized(monitor.name())))
+            .unwrap();
+    }
 }
